@@ -1,0 +1,22 @@
+.h {
+	font-size: 24px;
+	text-align: center;
+	font-weight: 600;
+	margin-bottom: 24px;
+}
+.dates {
+	display: flex;
+	flex-direction: column;
+	font-size: 16px;
+	gap: 12px;
+}
+.center {
+	width: fit-content;
+	margin: 24px auto 0;
+}
+.input {
+	input {
+		height: auto !important;
+		font-size: 16px !important;
+	}
+}

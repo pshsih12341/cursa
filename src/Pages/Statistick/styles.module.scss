@@ -1,0 +1,48 @@
+.container {
+	width: 100%;
+	height: 320px;
+	overflow-y: scroll;
+	padding: 12px 16px 24px;
+	position: relative;
+	scrollbar-width: none;
+}
+
+.container::-webkit-scrollbar {
+	display: none;
+}
+.h {
+	font-size: 24px;
+	text-align: center;
+	font-weight: 600;
+	margin-bottom: 24px;
+}
+.content {
+	display: flex;
+	flex-direction: column;
+	gap: 15px;
+	height: 100%;
+}
+.name {
+	width: 150px;
+}
+.hours {
+	width: 50px;
+}
+.item {
+	display: flex;
+	justify-content: space-between;
+	gap: 10px;
+	height: 50px;
+	align-items: center;
+}
+.logo {
+	width: 24px;
+	height: 24px;
+}
+.color {
+	height: 80%;
+}
+.line {
+	width: 380px;
+	height: 100%;
+}

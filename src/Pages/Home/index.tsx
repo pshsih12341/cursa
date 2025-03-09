@@ -4,6 +4,9 @@ import styles from "./styles.module.scss";
 import {useAppDispatch, useAppSelector} from "shared/hooks/stateHooks";
 import {changeTab} from "entities/layout";
 import {Tabs} from "antd";
+import Statistick from "Pages/Statistick";
+import Lists from "Pages/Lists";
+import Reports from "Pages/Reports";
 
 const Home: React.FC = () => {
 	const dispatch = useAppDispatch();
@@ -12,18 +15,18 @@ const Home: React.FC = () => {
 	const tabs = [
 		{
 			key: "1",
-			label: "Tab 1",
-			children: "Content of Tab Pane 1",
+			label: <div className={styles.label}>Статистика</div>,
+			children: <Statistick />,
 		},
 		{
 			key: "2",
-			label: "Tab 2",
-			children: "Content of Tab Pane 2",
+			label: <div className={styles.label}>Листы</div>,
+			children: <Lists />,
 		},
 		{
 			key: "3",
-			label: "Tab 3",
-			children: <div>Content of Tab Pane 3</div>,
+			label: <div className={styles.label}>Отчеты</div>,
+			children: <Reports />,
 		},
 	];
 
@@ -32,7 +35,7 @@ const Home: React.FC = () => {
 	};
 	return (
 		<div className={styles.container}>
-			<Tabs tabPosition='bottom' defaultActiveKey={activeTab} items={tabs} onChange={k => onChange(k)} />
+			<Tabs tabBarStyle={{justifyContent: "space-between", width: "100%", fontSize: "32px"}} centered className={styles.tabs} tabPosition='bottom' defaultActiveKey={activeTab} items={tabs} onChange={k => onChange(k)} />
 		</div>
 	);
 };
