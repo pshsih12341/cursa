@@ -98,40 +98,71 @@ const handleSessionEnd = async () => {
   console.log('Stats updated:', dateKey, currentDomain, seconds);
 };
 
+let sessionInterval = null;
+
 const startNewSession = (tab) => {
   if (!tab?.url) return;
-  
+
+  // Очищаем предыдущий интервал
+  if (sessionInterval) clearInterval(sessionInterval);
+
   try {
     const url = new URL(tab.url);
     currentDomain = url.hostname.replace(/^www\./i, '').toLowerCase();
-    console.log(currentDomain);
     sessionStart = Date.now();
+    
+    // Периодическое сохранение каждые 15 секунд
+    sessionInterval = setInterval(() => {
+      handleSessionEnd();
+      sessionStart = Date.now(); // Сбрасываем таймер
+    }, 15_000);
+
   } catch (e) {
     console.error('Invalid URL:', tab.url);
   }
 };
 
-// Tab event handlers
+// Обновите все обработчики вкладок:
 chrome.tabs.onActivated.addListener(({ tabId }) => {
   handleSessionEnd().finally(() => {
+    if (sessionInterval) clearInterval(sessionInterval); // Важно!
     activeTabId = tabId;
     chrome.tabs.get(tabId, startNewSession);
   });
 });
 
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (tabId === activeTabId && (changeInfo.status === 'complete' || changeInfo.url)) {
-    handleSessionEnd().finally(() => startNewSession(tab));
-  }
-});
-
 chrome.tabs.onRemoved.addListener((tabId) => {
   if (tabId === activeTabId) {
     handleSessionEnd().finally(() => {
+      if (sessionInterval) clearInterval(sessionInterval); // Важно!
       activeTabId = null;
       sessionStart = null;
       currentDomain = null;
     });
+  }
+});
+
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (tabId === activeTabId && changeInfo.url) {
+    // При изменении URL внутри вкладки
+    handleSessionEnd().finally(() => {
+      if (sessionInterval) clearInterval(sessionInterval);
+      startNewSession(tab);
+    });
+  }
+  
+  // Обработчик изменения видимости вкладки
+  if (tabId === activeTabId && changeInfo.hidden !== undefined) {
+    if (changeInfo.hidden) {
+      handleSessionEnd();
+      if (sessionInterval) clearInterval(sessionInterval);
+    } else {
+      sessionStart = Date.now();
+      sessionInterval = setInterval(() => {
+        handleSessionEnd();
+        sessionStart = Date.now();
+      }, 15_000);
+    }
   }
 });
 
