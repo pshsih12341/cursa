@@ -1,16 +1,32 @@
-import React from "react";
+/* eslint-disable no-undef */
+import React, { useEffect } from "react";
 
 import styles from "./styles.module.scss";
-import {useAppDispatch, useAppSelector} from "shared/hooks/stateHooks";
 import {changeTab} from "entities/layout";
 import {Tabs} from "antd";
 import Statistick from "Pages/Statistick";
 import Lists from "Pages/Lists";
 import Reports from "Pages/Reports";
+import { useDispatch, useSelector } from "react-redux";
+import { initializeStats } from "../../entities/stat"; 
+import { initializeLists } from "../../entities/lists";
 
-const Home: React.FC = () => {
-	const dispatch = useAppDispatch();
-	const activeTab = useAppSelector(s => s.layoutSlice.activeTab);
+
+const Home = () => {
+	const dispatch = useDispatch();
+	const activeTab = useSelector(s => s.layoutSlice.activeTab);
+  
+	useEffect(() => {
+		const handleStorageUpdate = (message) => {
+		  if (message.type === 'STORAGE_UPDATED') {
+			dispatch(initializeStats.fulfilled(message.stats));
+		  }
+		};
+	  dispatch(initializeLists());
+		chrome.runtime.onMessage.addListener(handleStorageUpdate);
+		return () => chrome.runtime.onMessage.removeListener(handleStorageUpdate);
+	  }, [dispatch]);
+
 
 	const tabs = [
 		{
@@ -30,7 +46,7 @@ const Home: React.FC = () => {
 		},
 	];
 
-	const onChange = (activeKey: string) => {
+	const onChange = (activeKey) => {
 		dispatch(changeTab(activeKey));
 	};
 	return (

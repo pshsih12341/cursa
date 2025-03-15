@@ -13,7 +13,6 @@ export const blockedUrls: string[] = [
 	"4pda.to",
 	"4chan.org",
 	"wikipedia.org",
-	"chatgpt.com",
 	"reddit.com",
 	"yahoo.com",
 	"yahoo.co.jp",

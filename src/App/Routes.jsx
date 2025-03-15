@@ -2,7 +2,7 @@ import {HashRouter as Router, Routes, Route} from "react-router-dom";
 import Layout from "../widgets/Layout";
 import HomePage from "Pages/Home";
 
-const AppRouter: React.FC = () => {
+const AppRouter = () => {
 	return (
 		<Router>
 			<Routes>
