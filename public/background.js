@@ -182,3 +182,47 @@ setInterval(() => {
 chrome.runtime.onSuspend.addListener(() => {
   handleSessionEnd().catch(console.error);
 });
+
+const isScheduleNowActive = (schedule) => {
+  if (!schedule || !schedule.days || !schedule.startTime || !schedule.endTime) return false;
+
+  const now = new Date();
+  const currentDay = now.getDay(); // 0 = Sunday
+  const isWeekday = currentDay >= 1 && currentDay <= 5;
+  const isWeekend = currentDay === 0 || currentDay === 6;
+
+  const [startHours, startMinutes] = schedule.startTime.split(":").map(Number);
+  const [endHours, endMinutes] = schedule.endTime.split(":").map(Number);
+
+  const nowMinutes = now.getHours() * 60 + now.getMinutes();
+  const start = startHours * 60 + startMinutes;
+  const end = endHours * 60 + endMinutes;
+
+  const withinTime = nowMinutes >= start && nowMinutes <= end;
+
+  return (
+    (schedule.days.includes("weekdays") && isWeekday && withinTime) ||
+    (schedule.days.includes("weekends") && isWeekend && withinTime)
+  );
+};
+
+setInterval(async () => {
+  const result = await chrome.storage.local.get([
+    'BlackListSchedule',
+    'WhiteListSchedule'
+  ]);
+
+  const blackActive = isScheduleNowActive(result.BlackListSchedule);
+  const whiteActive = isScheduleNowActive(result.WhiteListSchedule);
+
+  // Если оба активны — приоритет у белого списка
+  const mode = whiteActive ? 'whitelist' : blackActive ? 'blacklist' : null;
+  const isBlacklistEnabled = mode === 'blacklist';
+  const isWhitelistEnabled = mode === 'whitelist';
+
+  await chrome.storage.local.set({
+    isBlacklistEnabled,
+    isWhitelistEnabled
+  });
+
+}, 60_000); // каждые 60 секунд

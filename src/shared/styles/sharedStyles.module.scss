@@ -1,0 +1,36 @@
+.header {
+	padding: 16px;
+	display: flex;
+	align-items: center;
+	text-align: center;
+	justify-content: center;
+	color: #0d141c;
+	font-size: 32px;
+	font-weight: bold;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 390px;
+	border-bottom: #e8edf2 solid 1px;
+	white-space: pre-wrap;
+	line-height: 23px;
+	min-height: 78px;
+	background-color: white;
+	z-index: 10;
+}
+.mainCont {
+	padding: 16px;
+	overflow-y: auto;
+	position: relative;
+	height: 487px;
+}
+
+.mainCont::-webkit-scrollbar {
+	width: 0;
+}
+.contentCont {
+	margin-top: 78px;
+	display: flex;
+	gap: 16px;
+	flex-direction: column;
+}

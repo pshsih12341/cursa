@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { isScheduleNowActive } from "../shared/utils/isScheduleNowActive";
 
 export const initializeLists = createAsyncThunk(
   'lists/initialize',
@@ -8,14 +9,18 @@ export const initializeLists = createAsyncThunk(
       'BlackList', 
       'WhiteList', 
       'isBlacklistEnabled', 
-      'isWhitelistEnabled'
+      'isWhitelistEnabled',
+      'BlackListSchedule',
+      'WhiteListSchedule'
     ]);
     
     return {
       BlackList: result.BlackList || [],
       WhiteList: result.WhiteList || [],
       isBlacklistEnabled: result.isBlacklistEnabled || false,
-      isWhitelistEnabled: result.isWhitelistEnabled || false
+      isWhitelistEnabled: result.isWhitelistEnabled || false,
+      BlackListSchedule: result.BlackListSchedule || {},
+      WhiteListSchedule: result.WhiteListSchedule || {},
     };
   }
 );
@@ -37,9 +42,12 @@ const listSlice = createSlice({
     WhiteList: [],
     isBlacklistEnabled: false,
     isWhitelistEnabled: false,
-    initialized: false
+    initialized: false,
+    BlackListSchedule: {},
+    WhiteListSchedule: {}
   },
-  reducers: {addTolist(state, action) {
+  reducers: {
+    addTolist(state, action) {
     const { list, item } = action.payload;
     const domain = parseDomain(item);
     
@@ -64,15 +72,28 @@ const listSlice = createSlice({
     toggleList(state, action) {
       const { list, value } = action.payload;
       const isBlack = list === 'BlackList';
-      
-      // Гарантируем взаимоисключающее включение
+      const scheduleKey = isBlack ? 'BlackListSchedule' : 'WhiteListSchedule';
+    
+      // если пользователь хочет ВКЛЮЧИТЬ, но сейчас включено по расписанию — игнорируем
+      if (value === true && isScheduleNowActive(state[scheduleKey])) {
+        console.warn("Попытка включить вручную, но расписание уже активно — игнорируем.");
+        return;
+      }
+    
       state.isBlacklistEnabled = isBlack ? value : false;
       state.isWhitelistEnabled = isBlack ? false : value;
-      
+    
       chrome.storage.local.set({
         isBlacklistEnabled: state.isBlacklistEnabled,
         isWhitelistEnabled: state.isWhitelistEnabled
       });
+    },
+
+    updateSchedule(state, action) {
+      const { list, days, startTime, endTime } = action.payload;
+      const scheduleKey = list === "BlackList" ? "BlackListSchedule" : "WhiteListSchedule";
+      state[scheduleKey] = { days, startTime, endTime };
+      chrome.storage.local.set({ [scheduleKey]: state[scheduleKey] });
     }
   },
   extraReducers: (builder) => {
@@ -81,10 +102,12 @@ const listSlice = createSlice({
       state.WhiteList = action.payload.WhiteList;
       state.isBlacklistEnabled = action.payload.isBlacklistEnabled;
       state.isWhitelistEnabled = action.payload.isWhitelistEnabled;
+      state.BlackListSchedule = action.payload.BlackListSchedule;
+      state.WhiteListSchedule = action.payload.WhiteListSchedule;
       state.initialized = true;
     });
   }
 });
 
-export const { addTolist, deleteFromList, toggleList } = listSlice.actions;
+export const { addTolist, deleteFromList, toggleList,updateSchedule } = listSlice.actions;
 export default listSlice.reducer;

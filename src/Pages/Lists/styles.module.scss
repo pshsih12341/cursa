@@ -1,39 +1,63 @@
-.btnCont {
+.btn {
+	height: 56px;
+	font-size: 18px;
+	font-weight: bold;
+	line-height: 21px;
+	border-radius: 12px;
+}
+.acceptBlock {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	margin-bottom: 24px;
 }
-.h {
-	font-size: 24px;
-	text-align: center;
-	font-weight: 600;
-	margin-bottom: 24px;
-}
-.btnFlex {
-	align-items: center;
+.textRight {
 	display: flex;
 	flex-direction: column;
-	gap: 24px;
+	:first-child {
+		font-size: 18px;
+		font-weight: 500;
+		line-height: 21px;
+	}
+	:last-child {
+		color: #5c7290;
+		font-size: 14px;
+		font-weight: 500;
+		line-height: 21px;
+	}
+}
+.left {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+.calenderBtn {
+	padding: 6px;
+	height: fit-content;
 	font-size: 16px;
+	border-radius: 20px;
 }
-.cont {
-	margin: 0 auto;
-	width: 400px;
-}
-.switchFlex {
-	flex-direction: column;
+.flex {
 	display: flex;
-	align-items: center;
 	gap: 8px;
+	margin-bottom: 12px;
 }
+.block {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+.weekBtn {
+	width: 100%;
+	margin-bottom: 12px;
+}
+
 .header {
 	position: relative;
 }
 .back {
 	position: absolute;
-	top: 15%;
-	left: 0;
+	top: 32%;
+	left: 16px;
 	cursor: pointer;
 	font-size: 32px;
 }
@@ -62,8 +86,8 @@
 	cursor: pointer;
 }
 .input {
-	position: absolute;
-	bottom: 0;
+	position: fixed;
+	bottom: 91px;
 	left: 16px;
 	width: calc(100% - 32px);
 }

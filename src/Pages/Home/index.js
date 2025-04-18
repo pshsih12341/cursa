@@ -10,6 +10,9 @@ import Reports from "Pages/Reports";
 import { useDispatch, useSelector } from "react-redux";
 import { initializeStats } from "../../entities/stat"; 
 import { initializeLists } from "../../entities/lists";
+import { initializeUser } from "../../entities/layout";
+import Page from "../../features/Page";
+import classNames from "classnames";
 
 
 const Home = () => {
@@ -23,25 +26,41 @@ const Home = () => {
 		  }
 		};
 	  dispatch(initializeLists());
+	  dispatch(initializeUser());
 		chrome.runtime.onMessage.addListener(handleStorageUpdate);
 		return () => chrome.runtime.onMessage.removeListener(handleStorageUpdate);
 	  }, [dispatch]);
 
 
-	const tabs = [
+	  const tabs = [
 		{
 			key: "1",
-			label: <div className={styles.label}>Статистика</div>,
+			label: (
+				<div className={classNames(styles.label, activeTab === "1" && styles.active)}>
+					<div className={classNames(styles.img, styles.statImg)} />
+					Статистика
+				</div>
+			),
 			children: <Statistick />,
 		},
 		{
 			key: "2",
-			label: <div className={styles.label}>Листы</div>,
+			label: (
+				<div className={classNames(styles.label, activeTab === "2" && styles.active)}>
+					<div className={classNames(styles.img, styles.listImg)} />
+					Листы
+				</div>
+			),
 			children: <Lists />,
 		},
 		{
 			key: "3",
-			label: <div className={styles.label}>Отчеты</div>,
+			label: (
+				<div className={classNames(styles.label, activeTab === "3" && styles.active)}>
+					<div className={classNames(styles.img, styles.reportsImg)} />
+					Отчеты
+				</div>
+			),
 			children: <Reports />,
 		},
 	];
@@ -49,10 +68,12 @@ const Home = () => {
 	const onChange = (activeKey) => {
 		dispatch(changeTab(activeKey));
 	};
+
+	console.log()
 	return (
-		<div className={styles.container}>
+		<Page>
 			<Tabs tabBarStyle={{justifyContent: "space-between", width: "100%", fontSize: "32px"}} centered className={styles.tabs} tabPosition='bottom' defaultActiveKey={activeTab} items={tabs} onChange={k => onChange(k)} />
-		</div>
+		</Page>
 	);
 };
 

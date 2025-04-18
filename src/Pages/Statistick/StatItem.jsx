@@ -9,27 +9,21 @@ const StatItem = ({stat, totalSeconds}) => {
 	const whiteList = useSelector(state => state.listSlyce.WhiteList);
 
 	return (
-		<div className={styles.item}>
-			<div className={styles.domain}>
-				<img src={`https://www.google.com/s2/favicons?domain=${stat.domain}`} alt='favicon' className={styles.favicon} />
-				{stat.domain}
+		<div className={styles.statItem}>
+			<div className={styles.right}>
+				<div className={styles.imgCont}>
+					<img src={`https://www.google.com/s2/favicons?domain=${stat.domain}`} alt='favicon' />
+				</div>
+				<div className={styles.domain}>{stat.domain}</div>
 			</div>
-			<div className={styles.progress}>
-				<div
-					className={styles.bar}
-					style={{
-						width: `${(stat.seconds / totalSeconds) * 100}%`,
-						backgroundColor: `${
-							whiteList.includes(stat.domain) ? "green"
-							: blockedUrls.includes(stat.domain) ? "red"
-							: "yellow"
-						}`,
-					}}
-				/>
-			</div>
-			<div className={styles.time}>
-				{hours > 0 && `${hours}ч `}
-				{minutes}м
+			<div className={styles.left}>
+				<div className={styles.bar}>
+					<div style={{width: `${(stat.seconds / totalSeconds) * 100}%`, backgroundColor: stat.color}} className={styles.barInner} />
+				</div>
+				<div>
+					{hours > 0 && `${hours}ч `}
+					{minutes}м
+				</div>
 			</div>
 		</div>
 	);
