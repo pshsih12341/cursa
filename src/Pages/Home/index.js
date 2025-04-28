@@ -27,8 +27,17 @@ const Home = () => {
 		};
 	  dispatch(initializeLists());
 	  dispatch(initializeUser());
+	  const handleMessage = (message) => {
+		if (message.type === 'SWITCH_TAB') {
+		  dispatch(changeTab('3'));
+		  dispatch(setActiveReport(message.payload.reportId));
+		}
+	};
+		chrome.runtime.onMessage.addListener(handleMessage);
 		chrome.runtime.onMessage.addListener(handleStorageUpdate);
-		return () => chrome.runtime.onMessage.removeListener(handleStorageUpdate);
+		return () => {
+			chrome.runtime.onMessage.removeListener(handleStorageUpdate);
+			chrome.runtime.onMessage.removeListener(handleMessage);}
 	  }, [dispatch]);
 
 

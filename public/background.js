@@ -183,46 +183,35 @@ chrome.runtime.onSuspend.addListener(() => {
   handleSessionEnd().catch(console.error);
 });
 
-const isScheduleNowActive = (schedule) => {
-  if (!schedule || !schedule.days || !schedule.startTime || !schedule.endTime) return false;
-
-  const now = new Date();
-  const currentDay = now.getDay(); // 0 = Sunday
-  const isWeekday = currentDay >= 1 && currentDay <= 5;
-  const isWeekend = currentDay === 0 || currentDay === 6;
-
-  const [startHours, startMinutes] = schedule.startTime.split(":").map(Number);
-  const [endHours, endMinutes] = schedule.endTime.split(":").map(Number);
-
-  const nowMinutes = now.getHours() * 60 + now.getMinutes();
-  const start = startHours * 60 + startMinutes;
-  const end = endHours * 60 + endMinutes;
-
-  const withinTime = nowMinutes >= start && nowMinutes <= end;
-
-  return (
-    (schedule.days.includes("weekdays") && isWeekday && withinTime) ||
-    (schedule.days.includes("weekends") && isWeekend && withinTime)
-  );
+const showNotification = (reportId) => {
+  chrome.notifications.create(reportId, {
+    type: 'basic',
+    iconUrl: 'https://1.gravatar.com/avatar/4702203d7d99ee6b4b866da9a1a347d1b73eb492882558ed8200da0903c19929?s=160&d=wavatar&r=G',
+    title: 'Отчет готов',
+    message: 'Ваш отчет успешно сформирован',
+    buttons: [{ title: 'Открыть отчет' }]
+  });
 };
 
-setInterval(async () => {
-  const result = await chrome.storage.local.get([
-    'BlackListSchedule',
-    'WhiteListSchedule'
-  ]);
+// Обработчик алармов
+chrome.alarms.onAlarm.addListener(async (alarm) => {
+  const reportId = alarm.name;
+  const { reports = [] } = await chrome.storage.local.get('reports');
+  const updatedReports = reports.map(report => 
+    report.id === reportId ? { ...report, status: 'ready' } : report
+  );
+  
+  await chrome.storage.local.set({ reports: updatedReports });
+  showNotification(reportId);
+});
 
-  const blackActive = isScheduleNowActive(result.BlackListSchedule);
-  const whiteActive = isScheduleNowActive(result.WhiteListSchedule);
-
-  // Если оба активны — приоритет у белого списка
-  const mode = whiteActive ? 'whitelist' : blackActive ? 'blacklist' : null;
-  const isBlacklistEnabled = mode === 'blacklist';
-  const isWhitelistEnabled = mode === 'whitelist';
-
-  await chrome.storage.local.set({
-    isBlacklistEnabled,
-    isWhitelistEnabled
+// Обработчик клика по уведомлению
+chrome.notifications.onClicked.addListener(async (reportId) => {
+  chrome.tabs.create({ url: chrome.runtime.getURL('popup.html') });
+  
+  // Отправляем сообщение для переключения вкладки
+  chrome.runtime.sendMessage({
+    type: 'SWITCH_TAB',
+    payload: { tabKey: '3', reportId }
   });
-
-}, 60_000); // каждые 60 секунд
+});

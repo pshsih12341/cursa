@@ -6,7 +6,7 @@
 		"default_popup": "index.html",
 		"default_icon": "icon.png"
 	},
-	"permissions": ["storage", "webRequest", "declarativeNetRequest", "tabs", "idle"],
+	"permissions": ["storage", "webRequest", "declarativeNetRequest", "tabs", "idle", "alarms", "notifications"],
 	"background": {
 		"service_worker": "background.js"
 	},
