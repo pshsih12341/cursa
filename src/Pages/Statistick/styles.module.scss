@@ -46,11 +46,19 @@
 .barInner {
 	height: 4px;
 	border-radius: 2px;
-	background-color: red;
+	background-color: rgb(213 7 7);
 }
 .left {
 	flex-shrink: 0;
 	display: flex;
 	align-items: center;
 	gap: 12px;
+}
+.isReport {
+	width: 24px;
+	height: 24px;
+	img {
+		width: 16px;
+		height: 16px;
+	}
 }

@@ -21,9 +21,9 @@ const Statistick = () => {
 	const totalSeconds = Object.values(todayStats).reduce((acc, s) => acc + s, 0);
 	const statsArray = Object.entries(todayStats)
 		.map(([domain, seconds]) => {
-			let color = "yellow";
+			let color = "rgb(213 7 7)";
 			if (blockedUrls.includes(domain) || blackList.includes(domain)) {
-				color = "red";
+				color = "rgb(255 144 0)";
 			} else if (whiteList.includes(domain)) {
 				color = "green";
 			}
